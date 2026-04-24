@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "flutter-architecting-apps": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "8d4c005971a6dc098557a5511cfd683de25aa88cb595c5bc8b306168c35bc7ab"
+    },
+    "flutter-building-layouts": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "9686218c0b724c42ea30e97a3cc081cf4de69b5f3b0aa6253bd012ce9d573834"
+    },
+    "flutter-implementing-navigation-and-routing": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "eed907fa9e5c26df809d3db2ad80bf736b0956058dc20ba21dad386de677b7a8"
+    },
+    "flutter-managing-state": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "14b60303535c07f900097f2054613f0835668f202c289b0429446aba28941576"
+    },
+    "flutter-testing-apps": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "beb1d2de3a34745a13c066f06316150e5ab647f45922d5e5d86ee9c6c47c6cb4"
+    },
+    "flutter-theming-apps": {
+      "source": "flutter/skills",
+      "sourceType": "github",
+      "computedHash": "0343c87f382a920523c00d9050f675753849a8ab621a19e0b883715418b1a49d"
+    }
+  }
+}
