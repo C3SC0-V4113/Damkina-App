@@ -75,3 +75,7 @@ flutter test
 ```
 
 Run build_runner only when Freezed/json_serializable inputs changed. If a command cannot run, report the exact blocker.
+
+Keep `flutter analyze` clean under the configured lint stack, currently `very_good_analysis` plus `riverpod_lint`.
+
+Do not add project-wide suppressions or `ignore_for_file` comments unless there is a specific, justified false positive or generated-code case.

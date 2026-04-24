@@ -1,8 +1,7 @@
+import 'package:damkina_app/core/routing/app_routes.dart';
+import 'package:damkina_app/shared/widgets/damkina_placeholder_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/routing/app_routes.dart';
-import '../../../shared/widgets/damkina_placeholder_screen.dart';
 
 class OnboardingNameScreen extends StatelessWidget {
   const OnboardingNameScreen({super.key});

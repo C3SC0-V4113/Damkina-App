@@ -1,4 +1,4 @@
-import '../../../shared/models/recommendation.dart';
+import 'package:damkina_app/shared/models/recommendation.dart';
 
 abstract interface class RecommendationRepository {
   Future<List<Recommendation>> listRecommendationsForLocation(

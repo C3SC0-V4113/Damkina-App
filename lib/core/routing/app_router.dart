@@ -1,16 +1,15 @@
+import 'package:damkina_app/core/routing/app_routes.dart';
+import 'package:damkina_app/features/auth/presentation/login_screen.dart';
+import 'package:damkina_app/features/crops/presentation/crop_detail_screen.dart';
+import 'package:damkina_app/features/crops/presentation/crops_screen.dart';
+import 'package:damkina_app/features/locations/presentation/location_form_screen.dart';
+import 'package:damkina_app/features/locations/presentation/locations_screen.dart';
+import 'package:damkina_app/features/onboarding/presentation/onboarding_location_screen.dart';
+import 'package:damkina_app/features/onboarding/presentation/onboarding_name_screen.dart';
+import 'package:damkina_app/features/profile/presentation/profile_screen.dart';
+import 'package:damkina_app/shared/widgets/damkina_shell.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../features/auth/presentation/login_screen.dart';
-import '../../features/crops/presentation/crop_detail_screen.dart';
-import '../../features/crops/presentation/crops_screen.dart';
-import '../../features/locations/presentation/location_form_screen.dart';
-import '../../features/locations/presentation/locations_screen.dart';
-import '../../features/onboarding/presentation/onboarding_location_screen.dart';
-import '../../features/onboarding/presentation/onboarding_name_screen.dart';
-import '../../features/profile/presentation/profile_screen.dart';
-import '../../shared/widgets/damkina_shell.dart';
-import 'app_routes.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -67,7 +66,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   return LocationFormScreen(
                     mode: LocationFormMode.edit,
-                    locationId: state.pathParameters['locationId']!,
+                    locationId: state.pathParameters['locationId'],
                   );
                 },
               ),

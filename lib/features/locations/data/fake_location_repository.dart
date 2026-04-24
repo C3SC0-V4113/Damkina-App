@@ -1,5 +1,5 @@
-import '../../../shared/models/location.dart';
-import '../domain/location_repository.dart';
+import 'package:damkina_app/features/locations/domain/location_repository.dart';
+import 'package:damkina_app/shared/models/location.dart';
 
 class FakeLocationRepository implements LocationRepository {
   final List<Location> _locations = [

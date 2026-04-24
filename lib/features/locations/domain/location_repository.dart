@@ -1,4 +1,4 @@
-import '../../../shared/models/location.dart';
+import 'package:damkina_app/shared/models/location.dart';
 
 abstract interface class LocationRepository {
   Future<List<Location>> listLocations();

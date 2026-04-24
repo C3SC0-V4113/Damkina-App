@@ -1,5 +1,5 @@
-import '../../../shared/models/crop.dart';
-import '../domain/crop_repository.dart';
+import 'package:damkina_app/features/crops/domain/crop_repository.dart';
+import 'package:damkina_app/shared/models/crop.dart';
 
 class FakeCropRepository implements CropRepository {
   final List<Crop> _crops = const [
@@ -12,7 +12,7 @@ class FakeCropRepository implements CropRepository {
       maxHarvestDays: 110,
       difficulty: 'Medium',
       soilType: 'Well-drained loam',
-      soilPhMin: 6.0,
+      soilPhMin: 6,
       soilPhMax: 6.8,
       sunHoursMin: 6,
       sunHoursMax: 8,
@@ -34,7 +34,7 @@ class FakeCropRepository implements CropRepository {
       maxHarvestDays: 90,
       difficulty: 'Low',
       soilType: 'Loose fertile soil',
-      soilPhMin: 6.0,
+      soilPhMin: 6,
       soilPhMax: 7.5,
       sunHoursMin: 5,
       sunHoursMax: 8,

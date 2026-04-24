@@ -1,4 +1,4 @@
-import '../../../shared/models/app_user.dart';
+import 'package:damkina_app/shared/models/app_user.dart';
 
 abstract interface class AuthRepository {
   Future<AppUser?> currentUser();

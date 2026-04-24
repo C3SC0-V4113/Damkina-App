@@ -1,6 +1,5 @@
+import 'package:damkina_app/shared/widgets/damkina_placeholder_screen.dart';
 import 'package:flutter/material.dart';
-
-import '../../../shared/widgets/damkina_placeholder_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

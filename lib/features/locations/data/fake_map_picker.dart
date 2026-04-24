@@ -1,4 +1,4 @@
-import '../domain/map_picker.dart';
+import 'package:damkina_app/features/locations/domain/map_picker.dart';
 
 class FakeMapPicker implements MapPicker {
   @override

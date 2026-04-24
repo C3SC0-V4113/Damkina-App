@@ -1,8 +1,7 @@
+import 'package:damkina_app/core/routing/app_router.dart';
+import 'package:damkina_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'core/routing/app_router.dart';
-import 'core/theme/app_theme.dart';
 
 class DamkinaApp extends ConsumerWidget {
   const DamkinaApp({super.key});

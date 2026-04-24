@@ -1,5 +1,5 @@
-import '../../../shared/models/app_user.dart';
-import '../domain/auth_repository.dart';
+import 'package:damkina_app/features/auth/domain/auth_repository.dart';
+import 'package:damkina_app/shared/models/app_user.dart';
 
 class FakeAuthRepository implements AuthRepository {
   AppUser? _user = const AppUser(
@@ -8,7 +8,6 @@ class FakeAuthRepository implements AuthRepository {
     email: 'dev@damkina.local',
     displayName: 'Damkina Dev',
     customName: 'Damkina Dev',
-    avatarUrl: null,
   );
 
   @override
@@ -29,7 +28,6 @@ class FakeAuthRepository implements AuthRepository {
       email: 'dev@damkina.local',
       displayName: 'Damkina Dev',
       customName: 'Damkina Dev',
-      avatarUrl: null,
     );
 
     return _user!;

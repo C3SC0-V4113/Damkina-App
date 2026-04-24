@@ -2,8 +2,8 @@ import 'package:damkina_app/app.dart';
 import 'package:damkina_app/core/routing/app_router.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('app starts at login route', (tester) async {

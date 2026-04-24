@@ -1,6 +1,5 @@
+import 'package:damkina_app/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-
-import 'app_tokens.dart';
 
 class AppTheme {
   const AppTheme._();
@@ -8,7 +7,6 @@ class AppTheme {
   static ThemeData light() {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.seed,
-      brightness: Brightness.light,
       primary: AppColors.forest,
       secondary: AppColors.leaf,
       tertiary: AppColors.clay,

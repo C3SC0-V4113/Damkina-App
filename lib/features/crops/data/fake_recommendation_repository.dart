@@ -1,5 +1,5 @@
-import '../../../shared/models/recommendation.dart';
-import '../domain/recommendation_repository.dart';
+import 'package:damkina_app/features/crops/domain/recommendation_repository.dart';
+import 'package:damkina_app/shared/models/recommendation.dart';
 
 class FakeRecommendationRepository implements RecommendationRepository {
   final List<Recommendation> _recommendations = const [
@@ -40,10 +40,11 @@ class FakeRecommendationRepository implements RecommendationRepository {
   Future<List<Recommendation>> listRecommendationsForLocation(
     String locationId,
   ) async {
-    final matches = _recommendations
-        .where((recommendation) => recommendation.locationId == locationId)
-        .toList()
-      ..sort((left, right) => right.score.compareTo(left.score));
+    final matches =
+        _recommendations
+            .where((recommendation) => recommendation.locationId == locationId)
+            .toList()
+          ..sort((left, right) => right.score.compareTo(left.score));
 
     return matches;
   }

@@ -1,6 +1,5 @@
+import 'package:damkina_app/core/theme/app_tokens.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_tokens.dart';
 
 class DamkinaPlaceholderScreen extends StatelessWidget {
   const DamkinaPlaceholderScreen({
