@@ -1,0 +1,4 @@
+interface:
+  display_name: "Damkina Flutter Frontend"
+  short_description: "Reglas frontend Flutter de Damkina"
+  default_prompt: "Use $damkina-flutter-frontend to implement a Flutter frontend change in Damkina."
