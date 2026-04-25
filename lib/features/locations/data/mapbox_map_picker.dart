@@ -1,0 +1,34 @@
+import 'package:damkina_app/features/locations/domain/map_picker.dart';
+import 'package:damkina_app/features/locations/presentation/mapbox_location_picker_screen.dart';
+import 'package:flutter/material.dart';
+
+class MapboxMapPicker implements MapPicker {
+  MapboxMapPicker({
+    required GlobalKey<NavigatorState> navigatorKey,
+    required bool hasMapboxToken,
+  }) : _navigatorKey = navigatorKey,
+       _hasMapboxToken = hasMapboxToken;
+
+  final GlobalKey<NavigatorState> _navigatorKey;
+  final bool _hasMapboxToken;
+
+  @override
+  Future<MapSelection?> pickLocation({
+    MapSelection? initialSelection,
+  }) async {
+    final navigator = _navigatorKey.currentState;
+    final context = _navigatorKey.currentContext;
+    if (navigator == null || context == null) {
+      return null;
+    }
+
+    return navigator.push<MapSelection>(
+      MaterialPageRoute(
+        builder: (_) => MapboxLocationPickerScreen(
+          initialSelection: initialSelection,
+          hasMapboxToken: _hasMapboxToken,
+        ),
+      ),
+    );
+  }
+}

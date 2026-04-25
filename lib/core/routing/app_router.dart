@@ -1,4 +1,5 @@
 import 'package:damkina_app/core/routing/app_routes.dart';
+import 'package:damkina_app/core/routing/router_keys.dart';
 import 'package:damkina_app/features/auth/presentation/login_screen.dart';
 import 'package:damkina_app/features/crops/presentation/crop_detail_screen.dart';
 import 'package:damkina_app/features/crops/presentation/crops_screen.dart';
@@ -13,6 +14,7 @@ import 'package:go_router/go_router.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.login,
     routes: [
       GoRoute(

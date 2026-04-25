@@ -8,7 +8,9 @@ This base follows the accepted frontend ADR:
 - `go_router` for declarative routing.
 - Freezed and `json_serializable` for immutable models.
 - Repository interfaces with fake/local implementations while backend, auth,
-  maps, geocoding, and recommendation providers remain undecided.
+  geocoding, and recommendation providers remain undecided.
+- Map selection uses Mapbox through the `MapPicker` boundary, as accepted in
+  `ADR-0002`.
 
 Figma was used as mobile reference for the supported screen list and bottom
 navigation shape. Figma variables were not available through MCP because the
@@ -18,7 +20,7 @@ Pending ADRs before real integrations:
 
 - Backend and API contracts.
 - Google auth provider.
-- Map and geocoding provider.
+- Geocoding provider.
 - Recommendation engine.
 - Crop image source.
 
