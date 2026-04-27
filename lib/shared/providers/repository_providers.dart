@@ -24,7 +24,7 @@ final mapPickerProvider = Provider<MapPicker>((ref) {
   final appConfig = ref.watch(appConfigProvider);
   return MapboxMapPicker(
     navigatorKey: rootNavigatorKey,
-    hasMapboxToken: appConfig.hasMapboxAccessToken,
+    mapboxAccessToken: appConfig.mapboxAccessToken,
   );
 });
 
