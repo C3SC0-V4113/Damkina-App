@@ -11,6 +11,8 @@ This base follows the accepted frontend ADR:
   migration to real adapters as accepted ADRs are implemented.
 - Map selection uses Mapbox through the `MapPicker` boundary, as accepted in
   `ADR-0002`.
+- Mapbox reverse geocoding and elevation are allowed only for lightweight picker
+  UX preview through a dedicated geodata boundary, as accepted in `ADR-0004`.
 - Backend and auth are aligned with `ADR-0003`: Supabase (`supabase_flutter`)
   for Auth, Database, Storage, and Edge Functions, always behind
   `AuthRepository` and feature repository interfaces.
@@ -20,14 +22,17 @@ Figma was used as mobile reference for the supported screen list and bottom
 navigation shape. Figma variables were not available through MCP because the
 Starter plan call limit was reached, so theme tokens are manual and temporary.
 
-Current open items after ADR-0002 and ADR-0003:
+Current open items after ADR-0002, ADR-0003, and ADR-0004:
 
-- Geocoding provider.
 - Edge Function contract details and error model (`get-crops`,
   `get-recommendations`).
 - Initial crop seed and image-source strategy for Supabase Storage.
 - Recommendation score calibration and explanation policy.
 - Incremental migration plan from fake repositories to Supabase adapters.
+
+Mapbox geocoding/elevation in picker is considered non-authoritative preview UX.
+Canonical environmental profiling (Koppen, climate summary, seasonality, and
+score inputs) stays under the backend/contracts pipeline.
 
 ## AI Workflow In Damkina
 

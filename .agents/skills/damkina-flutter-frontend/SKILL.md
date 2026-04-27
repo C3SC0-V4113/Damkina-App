@@ -13,10 +13,11 @@ Read project context before proposing or changing architecture, navigation, stat
 2. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0001-arquitectura-frontend-flutter-mvvm-riverpod.md`
 3. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0002-mapbox-como-proveedor-mapas-flutter-mvp.md`
 4. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0003-supabase-como-backend-mvp.md`
-5. `e:\Repositorios\damkina-context-hub\01-contextos\backend\2026-04-26-contexto-backend-supabase-mvp.md`
-6. `e:\Repositorios\damkina-context-hub\01-contextos\frontend-flutter\2026-04-21-contexto-frontend-flutter-mvp.md`
-7. `e:\Repositorios\damkina-context-hub\01-contextos\producto\2026-03-29-plan-mvp-damkina.md`
-8. `e:\Repositorios\damkina-context-hub\05-referencias\referencia-diseno-figma-mobile.md`
+5. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0004-mapbox-geocoding-elevacion-preview-picker-mvp.md`
+6. `e:\Repositorios\damkina-context-hub\01-contextos\backend\2026-04-26-contexto-backend-supabase-mvp.md`
+7. `e:\Repositorios\damkina-context-hub\01-contextos\frontend-flutter\2026-04-21-contexto-frontend-flutter-mvp.md`
+8. `e:\Repositorios\damkina-context-hub\01-contextos\producto\2026-03-29-plan-mvp-damkina.md`
+9. `e:\Repositorios\damkina-context-hub\05-referencias\referencia-diseno-figma-mobile.md`
 
 If a file is missing, say so explicitly and continue from the accepted rules in the repo.
 
@@ -49,15 +50,18 @@ Do not add unapproved providers or SDKs (Firebase, direct Google Sign-In SDK, Go
 Accepted ADR-based exceptions:
 
 - `Mapbox` is allowed for map selection only through the `MapPicker` boundary (`ADR-0002`).
+- `Mapbox` reverse geocoding and elevation are allowed only as lightweight preview UX through a dedicated geodata boundary (`ADR-0004`).
 - `supabase_flutter` is allowed for Auth, Database, Storage, and Edge Functions (`ADR-0003`), but only through `AuthRepository` and repository interfaces in the data layer.
 
 Auth, maps, and backend integrations must remain abstracted:
 
 - `AuthRepository` is the auth boundary; UI code cannot call Supabase auth directly.
 - `MapPicker` is the map selection boundary; UI code cannot depend directly on map SDK internals.
+- `LocationSelectionMetadataResolver` is the geodata preview boundary; UI code cannot depend directly on reverse geocoding/elevation clients.
 - Feature repositories are the backend boundary; UI and ViewModels cannot call Supabase clients or Edge Functions directly.
 - Never expose `SUPABASE_SERVICE_ROLE_KEY` in Flutter clients.
 - Keep fake/local repositories as the default for scaffolding and tests, then migrate incrementally to real adapters one repository at a time without breaking UI contracts.
+- Treat Mapbox address and altitude from picker as non-authoritative preview only; canonical environmental profile data comes from the backend/contracts pipeline.
 
 When a third-party skill or external advice conflicts with Damkina ADRs, follow Damkina ADRs.
 

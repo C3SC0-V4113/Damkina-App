@@ -1,5 +1,4 @@
-import 'package:damkina_app/features/locations/data/mapbox_elevation_client.dart';
-import 'package:damkina_app/features/locations/data/mapbox_reverse_geocoding_client.dart';
+import 'package:damkina_app/features/locations/domain/location_selection_metadata_resolver.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
 import 'package:damkina_app/features/locations/presentation/mapbox_location_picker_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,19 +7,14 @@ class MapboxMapPicker implements MapPicker {
   MapboxMapPicker({
     required GlobalKey<NavigatorState> navigatorKey,
     required String mapboxAccessToken,
+    LocationSelectionMetadataResolver? selectionMetadataResolver,
   }) : _navigatorKey = navigatorKey,
        _mapboxAccessToken = mapboxAccessToken,
-       _reverseGeocodingClient = mapboxAccessToken.trim().isEmpty
-           ? null
-           : MapboxReverseGeocodingClient(accessToken: mapboxAccessToken),
-       _elevationClient = mapboxAccessToken.trim().isEmpty
-           ? null
-           : MapboxElevationClient(accessToken: mapboxAccessToken);
+       _selectionMetadataResolver = selectionMetadataResolver;
 
   final GlobalKey<NavigatorState> _navigatorKey;
   final String _mapboxAccessToken;
-  final MapboxReverseGeocodingClient? _reverseGeocodingClient;
-  final MapboxElevationClient? _elevationClient;
+  final LocationSelectionMetadataResolver? _selectionMetadataResolver;
 
   bool get _hasMapboxToken => _mapboxAccessToken.trim().isNotEmpty;
 
@@ -39,8 +33,8 @@ class MapboxMapPicker implements MapPicker {
         builder: (_) => MapboxLocationPickerScreen(
           initialSelection: initialSelection,
           hasMapboxToken: _hasMapboxToken,
-          resolveAddress: _reverseGeocodingClient?.reverseGeocode,
-          resolveAltitude: _elevationClient?.resolveAltitude,
+          resolveAddress: _selectionMetadataResolver?.resolveAddress,
+          resolveAltitude: _selectionMetadataResolver?.resolveAltitude,
         ),
       ),
     );
