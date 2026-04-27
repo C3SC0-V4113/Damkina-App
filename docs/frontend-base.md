@@ -7,22 +7,27 @@ This base follows the accepted frontend ADR:
 - `AsyncValue` through Riverpod `FutureProvider` for loading/error/data.
 - `go_router` for declarative routing.
 - Freezed and `json_serializable` for immutable models.
-- Repository interfaces with fake/local implementations while backend, auth,
-  geocoding, and recommendation providers remain undecided.
+- Repository interfaces with fake/local implementations first, and incremental
+  migration to real adapters as accepted ADRs are implemented.
 - Map selection uses Mapbox through the `MapPicker` boundary, as accepted in
   `ADR-0002`.
+- Backend and auth are aligned with `ADR-0003`: Supabase (`supabase_flutter`)
+  for Auth, Database, Storage, and Edge Functions, always behind
+  `AuthRepository` and feature repository interfaces.
+- Security rule: never expose `SUPABASE_SERVICE_ROLE_KEY` in client apps.
 
 Figma was used as mobile reference for the supported screen list and bottom
 navigation shape. Figma variables were not available through MCP because the
 Starter plan call limit was reached, so theme tokens are manual and temporary.
 
-Pending ADRs before real integrations:
+Current open items after ADR-0002 and ADR-0003:
 
-- Backend and API contracts.
-- Google auth provider.
 - Geocoding provider.
-- Recommendation engine.
-- Crop image source.
+- Edge Function contract details and error model (`get-crops`,
+  `get-recommendations`).
+- Initial crop seed and image-source strategy for Supabase Storage.
+- Recommendation score calibration and explanation policy.
+- Incremental migration plan from fake repositories to Supabase adapters.
 
 ## AI Workflow In Damkina
 

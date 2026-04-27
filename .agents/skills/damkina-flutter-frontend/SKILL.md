@@ -1,6 +1,6 @@
 ---
 name: damkina-flutter-frontend
-description: Damkina Flutter frontend architecture guardrails. Use when working in the Damkina Flutter app, especially for feature-first MVVM structure, Riverpod providers/state, go_router navigation, Freezed/json_serializable models, fake repositories, design tokens, tests, or any frontend change that must follow the accepted ADR and context hub rules.
+description: Damkina Flutter frontend architecture guardrails. Use when working in the Damkina Flutter app, especially for feature-first MVVM structure, Riverpod providers/state, go_router navigation, Freezed/json_serializable models, repository boundaries (fake and real adapters), design tokens, tests, or any frontend change that must follow the accepted ADR and context hub rules.
 ---
 
 # Damkina Flutter Frontend
@@ -11,9 +11,12 @@ Read project context before proposing or changing architecture, navigation, stat
 
 1. `e:\Repositorios\damkina-context-hub\AGENTS.md`
 2. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0001-arquitectura-frontend-flutter-mvvm-riverpod.md`
-3. `e:\Repositorios\damkina-context-hub\01-contextos\frontend-flutter\2026-04-21-contexto-frontend-flutter-mvp.md`
-4. `e:\Repositorios\damkina-context-hub\01-contextos\producto\2026-03-29-plan-mvp-damkina.md`
-5. `e:\Repositorios\damkina-context-hub\05-referencias\referencia-diseno-figma-mobile.md`
+3. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0002-mapbox-como-proveedor-mapas-flutter-mvp.md`
+4. `e:\Repositorios\damkina-context-hub\01-contextos\decisiones\0003-supabase-como-backend-mvp.md`
+5. `e:\Repositorios\damkina-context-hub\01-contextos\backend\2026-04-26-contexto-backend-supabase-mvp.md`
+6. `e:\Repositorios\damkina-context-hub\01-contextos\frontend-flutter\2026-04-21-contexto-frontend-flutter-mvp.md`
+7. `e:\Repositorios\damkina-context-hub\01-contextos\producto\2026-03-29-plan-mvp-damkina.md`
+8. `e:\Repositorios\damkina-context-hub\05-referencias\referencia-diseno-figma-mobile.md`
 
 If a file is missing, say so explicitly and continue from the accepted rules in the repo.
 
@@ -41,13 +44,20 @@ Keep Freezed and `json_serializable` for immutable models and JSON serialization
 
 ## Dependencies And Integration Boundaries
 
-Do not add Firebase, Google Sign-In, Google Maps, Mapbox, OpenStreetMap, Dio, Retrofit, backend SDKs, geocoding providers, analytics, or recommendation-engine dependencies unless a later accepted ADR explicitly approves them.
+Do not add unapproved providers or SDKs (Firebase, direct Google Sign-In SDK, Google Maps, OpenStreetMap, Dio, Retrofit, extra backend SDKs, geocoding providers, analytics, recommendation engines) unless an accepted ADR explicitly approves them.
 
-Auth and maps must remain abstracted:
+Accepted ADR-based exceptions:
 
-- `AuthRepository` is the auth boundary; real Google/Firebase auth needs ADR.
-- `MapPicker` is the map selection boundary; real map/geocoding providers need ADR.
-- Backend/API contracts and recommendation engines need ADR before implementation.
+- `Mapbox` is allowed for map selection only through the `MapPicker` boundary (`ADR-0002`).
+- `supabase_flutter` is allowed for Auth, Database, Storage, and Edge Functions (`ADR-0003`), but only through `AuthRepository` and repository interfaces in the data layer.
+
+Auth, maps, and backend integrations must remain abstracted:
+
+- `AuthRepository` is the auth boundary; UI code cannot call Supabase auth directly.
+- `MapPicker` is the map selection boundary; UI code cannot depend directly on map SDK internals.
+- Feature repositories are the backend boundary; UI and ViewModels cannot call Supabase clients or Edge Functions directly.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` in Flutter clients.
+- Keep fake/local repositories as the default for scaffolding and tests, then migrate incrementally to real adapters one repository at a time without breaking UI contracts.
 
 When a third-party skill or external advice conflicts with Damkina ADRs, follow Damkina ADRs.
 
@@ -61,7 +71,7 @@ Initial supported screens are login, onboarding name, onboarding location/map, a
 
 Keep changes small, reviewable, and traceable to context. Before modifying architecture, navigation, state, dependencies, or structure, cite the ADR/context file used.
 
-Do not implement full screens when the user asks for foundation or structure. Do not introduce real integrations in placeholder or MVP scaffolding work.
+Do not implement full screens when the user asks for foundation or structure. Do not introduce broad real integrations during scaffolding work; use ADR-approved integrations only when explicitly required by the task and keep them behind boundaries.
 
 ## Validation
 
