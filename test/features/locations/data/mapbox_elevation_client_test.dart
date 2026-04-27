@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:damkina_app/features/locations/data/mapbox_reverse_geocoding_client.dart';
+import 'package:damkina_app/features/locations/data/mapbox_elevation_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('MapboxReverseGeocodingClient', () {
+  group('MapboxElevationClient', () {
     late HttpServer server;
     late StreamSubscription<HttpRequest> subscription;
     late Future<void> Function(HttpRequest request) requestHandler;
@@ -30,7 +30,7 @@ void main() {
       await server.close(force: true);
     });
 
-    test('returns short address street + city from place_name', () async {
+    test('returns elevation when contour feature contains ele', () async {
       late Uri capturedUri;
       requestHandler = (request) async {
         capturedUri = request.uri;
@@ -40,62 +40,34 @@ void main() {
           body: const <String, Object>{
             'features': [
               {
-                'place_name':
-                    'Avenida Bernal, Cuscatancingo, '
-                    'San Salvador Department, El Salvador',
+                'properties': {'ele': 654},
               },
             ],
           },
         );
       };
 
-      final client = MapboxReverseGeocodingClient(
+      final client = MapboxElevationClient(
         accessToken: 'token-123',
         baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
       );
 
-      final result = await client.reverseGeocode(
+      final result = await client.resolveAltitude(
         latitude: 13.721,
         longitude: -89.255,
       );
 
-      expect(result, 'Avenida Bernal, Cuscatancingo');
+      expect(result, 654);
       expect(
         capturedUri.path,
-        '/geocoding/v5/mapbox.places/-89.255000,13.721000.json',
+        '/v4/mapbox.mapbox-terrain-v2/tilequery/-89.255000,13.721000.json',
       );
       expect(capturedUri.queryParameters['access_token'], 'token-123');
-      expect(capturedUri.queryParameters['limit'], '1');
-      expect(capturedUri.queryParameters['language'], 'en');
+      expect(capturedUri.queryParameters['layers'], 'contour');
+      expect(capturedUri.queryParameters['limit'], '50');
     });
 
-    test('falls back to first segment when only one segment exists', () async {
-      requestHandler = (request) async {
-        await _writeJsonResponse(
-          request: request,
-          statusCode: HttpStatus.ok,
-          body: const <String, Object>{
-            'features': [
-              {'place_name': 'Juayua'},
-            ],
-          },
-        );
-      };
-
-      final client = MapboxReverseGeocodingClient(
-        accessToken: 'token-123',
-        baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
-      );
-
-      final result = await client.reverseGeocode(
-        latitude: 13.7,
-        longitude: -89.2,
-      );
-
-      expect(result, 'Juayua');
-    });
-
-    test('truncates long short-address output to 40 chars', () async {
+    test('returns null when features are present but ele is missing', () async {
       requestHandler = (request) async {
         await _writeJsonResponse(
           request: request,
@@ -103,46 +75,27 @@ void main() {
           body: const <String, Object>{
             'features': [
               {
-                'place_name':
-                    'Avenida Principal de Los Almendros Norte, '
-                    'Municipio Muy Largo, San Salvador Department, '
-                    'El Salvador',
+                'properties': {'not_ele': 12},
               },
             ],
           },
         );
       };
 
-      final client = MapboxReverseGeocodingClient(
+      final client = MapboxElevationClient(
         accessToken: 'token-123',
         baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
       );
 
-      final result = await client.reverseGeocode(
-        latitude: 13.7,
-        longitude: -89.2,
-      );
-
-      expect(result, isNotNull);
-      expect(result!.length, lessThanOrEqualTo(40));
-      expect(result.endsWith('...'), isTrue);
-    });
-
-    test('returns null when API responds with empty features', () async {
-      final client = MapboxReverseGeocodingClient(
-        accessToken: 'token-123',
-        baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
-      );
-
-      final result = await client.reverseGeocode(
-        latitude: 13.7,
-        longitude: -89.2,
+      final result = await client.resolveAltitude(
+        latitude: 13.721,
+        longitude: -89.255,
       );
 
       expect(result, isNull);
     });
 
-    test('returns null when API responds with non-success status', () async {
+    test('returns null on non-success status code', () async {
       requestHandler = (request) async {
         await _writeJsonResponse(
           request: request,
@@ -151,20 +104,20 @@ void main() {
         );
       };
 
-      final client = MapboxReverseGeocodingClient(
+      final client = MapboxElevationClient(
         accessToken: 'token-123',
         baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
       );
 
-      final result = await client.reverseGeocode(
-        latitude: 13.7,
-        longitude: -89.2,
+      final result = await client.resolveAltitude(
+        latitude: 13.721,
+        longitude: -89.255,
       );
 
       expect(result, isNull);
     });
 
-    test('returns null when API responds with invalid payload', () async {
+    test('returns null on invalid payload', () async {
       requestHandler = (request) async {
         request.response.statusCode = HttpStatus.ok;
         request.response.headers.contentType = ContentType.text;
@@ -172,14 +125,14 @@ void main() {
         await request.response.close();
       };
 
-      final client = MapboxReverseGeocodingClient(
+      final client = MapboxElevationClient(
         accessToken: 'token-123',
         baseUri: Uri.parse('http://127.0.0.1:${server.port}'),
       );
 
-      final result = await client.reverseGeocode(
-        latitude: 13.7,
-        longitude: -89.2,
+      final result = await client.resolveAltitude(
+        latitude: 13.721,
+        longitude: -89.255,
       );
 
       expect(result, isNull);

@@ -12,17 +12,24 @@ typedef ReverseGeocodeResolver =
       required double latitude,
       required double longitude,
     });
+typedef AltitudeResolver =
+    Future<double?> Function({
+      required double latitude,
+      required double longitude,
+    });
 
 class MapboxLocationPickerScreen extends StatefulWidget {
   const MapboxLocationPickerScreen({
     required this.hasMapboxToken,
     this.resolveAddress,
+    this.resolveAltitude,
     this.initialSelection,
     super.key,
   });
 
   final bool hasMapboxToken;
   final ReverseGeocodeResolver? resolveAddress;
+  final AltitudeResolver? resolveAltitude;
   final MapSelection? initialSelection;
 
   @override
@@ -45,11 +52,15 @@ class _MapboxLocationPickerScreenState
   late MapSelection _currentSelection;
   bool _isRequestingCurrentLocation = false;
   bool _isResolvingAddress = false;
+  bool _isResolvingAltitude = false;
   bool _addressError = false;
+  bool _altitudeError = false;
   String? _requestError;
   String? _resolvedAddress;
   Timer? _addressDebounce;
+  Timer? _altitudeDebounce;
   int _addressRequestId = 0;
+  int _altitudeRequestId = 0;
 
   @override
   void initState() {
@@ -60,6 +71,7 @@ class _MapboxLocationPickerScreenState
   @override
   void dispose() {
     _addressDebounce?.cancel();
+    _altitudeDebounce?.cancel();
     super.dispose();
   }
 
@@ -117,14 +129,13 @@ class _MapboxLocationPickerScreenState
             onMapCreated: (controller) {
               _mapboxMap = controller;
               _scheduleAddressResolution(_currentSelection);
+              _scheduleAltitudeResolution(_currentSelection);
             },
             onCameraChangeListener: (event) {
               final coordinates = event.cameraState.center.coordinates;
               final nextSelection = MapSelection(
                 latitude: coordinates.lat.toDouble(),
                 longitude: coordinates.lng.toDouble(),
-                altitude:
-                    coordinates.alt?.toDouble() ?? _currentSelection.altitude,
               );
               if (!mounted) {
                 return;
@@ -133,6 +144,7 @@ class _MapboxLocationPickerScreenState
                 _currentSelection = nextSelection;
               });
               _scheduleAddressResolution(nextSelection);
+              _scheduleAltitudeResolution(nextSelection);
             },
           ),
           Center(
@@ -189,7 +201,10 @@ class _MapboxLocationPickerScreenState
                       Expanded(
                         child: _MetricItem(
                           label: 'Altitude',
-                          value: _formatAltitude(_currentSelection.altitude),
+                          value: _formatAltitude(
+                            altitude: _currentSelection.altitude,
+                            isResolvingAltitude: _isResolvingAltitude,
+                          ),
                           textAlign: TextAlign.end,
                         ),
                       ),
@@ -275,6 +290,8 @@ class _MapboxLocationPickerScreenState
                             child: Text(
                               _buildAddressInfo(),
                               style: const TextStyle(color: AppColors.mutedInk),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -331,6 +348,7 @@ class _MapboxLocationPickerScreenState
         _currentSelection = selection;
       });
       _scheduleAddressResolution(selection);
+      _scheduleAltitudeResolution(selection);
 
       await _mapboxMap?.flyTo(
         mapbox.CameraOptions(
@@ -396,6 +414,31 @@ class _MapboxLocationPickerScreenState
     });
   }
 
+  void _scheduleAltitudeResolution(MapSelection selection) {
+    final resolver = widget.resolveAltitude;
+    _altitudeDebounce?.cancel();
+    if (resolver == null) {
+      if (mounted) {
+        setState(() {
+          _isResolvingAltitude = false;
+          _altitudeError = true;
+        });
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isResolvingAltitude = true;
+        _altitudeError = false;
+      });
+    }
+
+    _altitudeDebounce = Timer(const Duration(milliseconds: 700), () {
+      unawaited(_resolveAltitudeForSelection(selection, resolver));
+    });
+  }
+
   Future<void> _resolveAddressForSelection(
     MapSelection selection,
     ReverseGeocodeResolver resolver,
@@ -433,6 +476,45 @@ class _MapboxLocationPickerScreenState
     }
   }
 
+  Future<void> _resolveAltitudeForSelection(
+    MapSelection selection,
+    AltitudeResolver resolver,
+  ) async {
+    final requestId = ++_altitudeRequestId;
+
+    try {
+      final altitude = await resolver(
+        latitude: selection.latitude,
+        longitude: selection.longitude,
+      );
+      if (!mounted || requestId != _altitudeRequestId) {
+        return;
+      }
+
+      setState(() {
+        _isResolvingAltitude = false;
+        _altitudeError = altitude == null;
+        _currentSelection = MapSelection(
+          latitude: selection.latitude,
+          longitude: selection.longitude,
+          altitude: altitude,
+        );
+      });
+    } on Exception {
+      if (!mounted || requestId != _altitudeRequestId) {
+        return;
+      }
+      setState(() {
+        _isResolvingAltitude = false;
+        _altitudeError = true;
+        _currentSelection = MapSelection(
+          latitude: selection.latitude,
+          longitude: selection.longitude,
+        );
+      });
+    }
+  }
+
   String _buildAddressInfo() {
     if (_isResolvingAddress) {
       return 'Resolving address...';
@@ -461,8 +543,14 @@ class _MapboxLocationPickerScreenState
         '$longitudeDirection';
   }
 
-  String _formatAltitude(double? altitude) {
-    if (altitude == null || !altitude.isFinite) {
+  String _formatAltitude({
+    required double? altitude,
+    required bool isResolvingAltitude,
+  }) {
+    if (isResolvingAltitude) {
+      return '...';
+    }
+    if (_altitudeError || altitude == null || !altitude.isFinite) {
       return '--';
     }
     return '${altitude.round()} msnm';

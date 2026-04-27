@@ -13,6 +13,7 @@ class MapboxReverseGeocodingClient {
   final String _accessToken;
   final Uri _baseUri;
   final HttpClient _httpClient;
+  static const _maxAddressLength = 40;
 
   Future<String?> reverseGeocode({
     required double latitude,
@@ -52,7 +53,7 @@ class MapboxReverseGeocodingClient {
 
       final placeName = first['place_name'];
       if (placeName is String && placeName.trim().isNotEmpty) {
-        return placeName.trim();
+        return _shortAddressFromPlaceName(placeName);
       }
 
       return null;
@@ -80,5 +81,44 @@ class MapboxReverseGeocodingClient {
         'language': 'en',
       },
     );
+  }
+
+  String? _shortAddressFromPlaceName(String placeName) {
+    final normalized = placeName
+        .split(',')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    final street = normalized.first;
+    final city = normalized
+        .skip(1)
+        .firstWhere(
+          (segment) => segment.toLowerCase() != street.toLowerCase(),
+          orElse: () => '',
+        );
+
+    final shortAddress = city.isEmpty ? street : '$street, $city';
+    return _truncateAddress(shortAddress);
+  }
+
+  String _truncateAddress(String value) {
+    if (value.length <= _maxAddressLength) {
+      return value;
+    }
+
+    const ellipsis = '...';
+    const minTrimmedLength = 16;
+    const maxWithoutEllipsis = _maxAddressLength - 3;
+    final head = value.substring(0, maxWithoutEllipsis + 1);
+    final lastSpace = head.lastIndexOf(' ');
+    final cutoff = lastSpace >= minTrimmedLength
+        ? lastSpace
+        : maxWithoutEllipsis;
+    final trimmed = value.substring(0, cutoff).trimRight();
+    return '$trimmed$ellipsis';
   }
 }
