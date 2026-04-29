@@ -159,9 +159,11 @@ class _LocationFormViewState extends ConsumerState<_LocationFormView> {
   }
 
   Future<void> _pickFromMap() async {
-    final selection = await ref.read(mapPickerProvider).pickLocation(
-      initialSelection: _selection,
-    );
+    final selection = await ref
+        .read(mapPickerProvider)
+        .pickLocation(
+          initialSelection: _selection,
+        );
 
     if (!mounted || selection == null) {
       return;
@@ -192,7 +194,8 @@ class _LocationFormViewState extends ConsumerState<_LocationFormView> {
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final locationRepository = ref.read(locationRepositoryProvider);
-      final user = await authRepository.currentUser() ??
+      final user =
+          await authRepository.currentUser() ??
           await authRepository.signInWithDevelopmentAccount();
       final existing = widget.initialLocation;
 

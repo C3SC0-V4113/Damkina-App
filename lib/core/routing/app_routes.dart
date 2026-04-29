@@ -1,6 +1,7 @@
 class AppRoutes {
   const AppRoutes._();
 
+  static const launch = '/';
   static const login = '/login';
   static const onboardingName = '/onboarding/name';
   static const onboardingLocation = '/onboarding/location';

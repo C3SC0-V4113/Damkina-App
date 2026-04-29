@@ -10,7 +10,9 @@ final activeLocationProvider = FutureProvider<Location?>((ref) {
   return ref.watch(locationRepositoryProvider).getActiveLocation();
 });
 
-final locationByIdProvider =
-    FutureProvider.family<Location?, String>((ref, id) {
-      return ref.watch(locationRepositoryProvider).getLocationById(id);
-    });
+final locationByIdProvider = FutureProvider.family<Location?, String>((
+  ref,
+  id,
+) {
+  return ref.watch(locationRepositoryProvider).getLocationById(id);
+});

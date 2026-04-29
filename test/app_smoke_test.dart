@@ -15,7 +15,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Login'), findsWidgets);
+    expect(find.text('Bienvenido'), findsOneWidget);
   });
 
   testWidgets('router can navigate to initial MVP routes', (tester) async {
@@ -32,6 +32,8 @@ void main() {
     );
 
     for (final route in [
+      '/',
+      '/login',
       '/onboarding/name',
       '/onboarding/location',
       '/crops',

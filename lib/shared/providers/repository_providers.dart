@@ -1,6 +1,7 @@
 import 'package:damkina_app/core/config/app_config.dart';
 import 'package:damkina_app/core/routing/router_keys.dart';
 import 'package:damkina_app/features/auth/data/fake_auth_repository.dart';
+import 'package:damkina_app/features/auth/data/supabase_auth_repository.dart';
 import 'package:damkina_app/features/auth/domain/auth_repository.dart';
 import 'package:damkina_app/features/crops/data/fake_crop_repository.dart';
 import 'package:damkina_app/features/crops/data/fake_recommendation_repository.dart';
@@ -13,8 +14,17 @@ import 'package:damkina_app/features/locations/domain/location_repository.dart';
 import 'package:damkina_app/features/locations/domain/location_selection_metadata_resolver.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final appConfig = ref.watch(appConfigProvider);
+  if (appConfig.hasSupabaseConfig) {
+    return SupabaseAuthRepository(
+      client: Supabase.instance.client,
+      appConfig: appConfig,
+    );
+  }
+
   return FakeAuthRepository();
 });
 

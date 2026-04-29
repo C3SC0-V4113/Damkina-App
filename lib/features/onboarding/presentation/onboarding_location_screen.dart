@@ -101,9 +101,11 @@ class _OnboardingLocationScreenState
   }
 
   Future<void> _pickFromMap() async {
-    final selection = await ref.read(mapPickerProvider).pickLocation(
-      initialSelection: _selection,
-    );
+    final selection = await ref
+        .read(mapPickerProvider)
+        .pickLocation(
+          initialSelection: _selection,
+        );
 
     if (!mounted || selection == null) {
       return;
@@ -133,7 +135,8 @@ class _OnboardingLocationScreenState
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final locationRepository = ref.read(locationRepositoryProvider);
-      final user = await authRepository.currentUser() ??
+      final user =
+          await authRepository.currentUser() ??
           await authRepository.signInWithDevelopmentAccount();
 
       final location = LocationDraftFactory.fromSelection(

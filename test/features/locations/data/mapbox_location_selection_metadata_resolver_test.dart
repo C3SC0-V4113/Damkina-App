@@ -47,106 +47,109 @@ void main() {
     test(
       'resolves address and altitude when providers respond successfully',
       () async {
-      requestHandler = (request) async {
-        if (request.uri.path.contains('/geocoding/v5/mapbox.places/')) {
+        requestHandler = (request) async {
+          if (request.uri.path.contains('/geocoding/v5/mapbox.places/')) {
+            await _writeJsonResponse(
+              request: request,
+              statusCode: HttpStatus.ok,
+              body: const <String, Object>{
+                'features': [
+                  {'place_name': 'Avenida Bernal, Cuscatancingo, San Salvador'},
+                ],
+              },
+            );
+            return;
+          }
+
           await _writeJsonResponse(
             request: request,
             statusCode: HttpStatus.ok,
             body: const <String, Object>{
               'features': [
-                {'place_name': 'Avenida Bernal, Cuscatancingo, San Salvador'},
+                {
+                  'properties': {'ele': 654},
+                },
               ],
             },
           );
-          return;
-        }
+        };
 
-        await _writeJsonResponse(
-          request: request,
-          statusCode: HttpStatus.ok,
-          body: const <String, Object>{
-            'features': [
-              {
-                'properties': {'ele': 654},
-              },
-            ],
-          },
+        final resolver = MapboxLocationSelectionMetadataResolver(
+          accessToken: 'token-123',
+          reverseGeocodingClient: reverseClient,
+          elevationClient: elevationClient,
         );
-      };
 
-      final resolver = MapboxLocationSelectionMetadataResolver(
-        accessToken: 'token-123',
-        reverseGeocodingClient: reverseClient,
-        elevationClient: elevationClient,
-      );
+        final address = await resolver.resolveAddress(
+          latitude: 13.721,
+          longitude: -89.255,
+        );
+        final altitude = await resolver.resolveAltitude(
+          latitude: 13.721,
+          longitude: -89.255,
+        );
 
-      final address = await resolver.resolveAddress(
-        latitude: 13.721,
-        longitude: -89.255,
-      );
-      final altitude = await resolver.resolveAltitude(
-        latitude: 13.721,
-        longitude: -89.255,
-      );
-
-      expect(address, 'Avenida Bernal, Cuscatancingo');
-      expect(altitude, 654);
-    });
+        expect(address, 'Avenida Bernal, Cuscatancingo');
+        expect(altitude, 654);
+      },
+    );
 
     test(
       'returns null values and skips requests when access token is empty',
       () async {
-      var requestCount = 0;
-      requestHandler = (request) async {
-        requestCount += 1;
-        await _writeJsonResponse(
-          request: request,
-          statusCode: HttpStatus.ok,
-          body: const <String, Object>{'features': []},
+        var requestCount = 0;
+        requestHandler = (request) async {
+          requestCount += 1;
+          await _writeJsonResponse(
+            request: request,
+            statusCode: HttpStatus.ok,
+            body: const <String, Object>{'features': []},
+          );
+        };
+
+        final resolver = MapboxLocationSelectionMetadataResolver(
+          accessToken: ' ',
+          reverseGeocodingClient: reverseClient,
+          elevationClient: elevationClient,
         );
-      };
 
-      final resolver = MapboxLocationSelectionMetadataResolver(
-        accessToken: ' ',
-        reverseGeocodingClient: reverseClient,
-        elevationClient: elevationClient,
-      );
+        final address = await resolver.resolveAddress(
+          latitude: 13.721,
+          longitude: -89.255,
+        );
+        final altitude = await resolver.resolveAltitude(
+          latitude: 13.721,
+          longitude: -89.255,
+        );
 
-      final address = await resolver.resolveAddress(
-        latitude: 13.721,
-        longitude: -89.255,
-      );
-      final altitude = await resolver.resolveAltitude(
-        latitude: 13.721,
-        longitude: -89.255,
-      );
-
-      expect(address, isNull);
-      expect(altitude, isNull);
-      expect(requestCount, 0);
+        expect(address, isNull);
+        expect(altitude, isNull);
+        expect(requestCount, 0);
       },
     );
 
-    test('returns null address on invalid payload', () async {
-      requestHandler = (request) async {
-        request.response.statusCode = HttpStatus.ok;
-        request.response.headers.contentType = ContentType.text;
-        request.response.write('not-json');
-        await request.response.close();
-      };
+    test(
+      'returns null address on invalid payload',
+      () async {
+        requestHandler = (request) async {
+          request.response.statusCode = HttpStatus.ok;
+          request.response.headers.contentType = ContentType.text;
+          request.response.write('not-json');
+          await request.response.close();
+        };
 
-      final resolver = MapboxLocationSelectionMetadataResolver(
-        accessToken: 'token-123',
-        reverseGeocodingClient: reverseClient,
-        elevationClient: elevationClient,
-      );
+        final resolver = MapboxLocationSelectionMetadataResolver(
+          accessToken: 'token-123',
+          reverseGeocodingClient: reverseClient,
+          elevationClient: elevationClient,
+        );
 
-      final address = await resolver.resolveAddress(
-        latitude: 13.721,
-        longitude: -89.255,
-      );
+        final address = await resolver.resolveAddress(
+          latitude: 13.721,
+          longitude: -89.255,
+        );
 
-      expect(address, isNull);
+        expect(address, isNull);
       },
     );
 
