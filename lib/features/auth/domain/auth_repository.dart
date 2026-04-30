@@ -1,7 +1,11 @@
 import 'package:damkina_app/shared/models/app_user.dart';
 
+enum AuthSessionEvent { changed }
+
 abstract interface class AuthRepository {
   Future<AppUser?> currentUser();
+
+  bool get hasActiveSession;
 
   Future<void> signInWithGoogle();
 
@@ -9,7 +13,7 @@ abstract interface class AuthRepository {
 
   Future<AppUser> saveDisplayName(String displayName);
 
-  Stream<Object?> authStateChanges();
+  Stream<AuthSessionEvent> authStateChanges();
 
   Future<void> signOut();
 }

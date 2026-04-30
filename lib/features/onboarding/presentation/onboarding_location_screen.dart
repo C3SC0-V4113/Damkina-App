@@ -1,5 +1,6 @@
 import 'package:damkina_app/core/routing/app_routes.dart';
 import 'package:damkina_app/core/theme/app_tokens.dart';
+import 'package:damkina_app/features/auth/application/auth_providers.dart';
 import 'package:damkina_app/features/locations/application/location_draft_factory.dart';
 import 'package:damkina_app/features/locations/application/location_providers.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
@@ -135,9 +136,10 @@ class _OnboardingLocationScreenState
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final locationRepository = ref.read(locationRepositoryProvider);
-      final user =
-          await authRepository.currentUser() ??
-          await authRepository.signInWithDevelopmentAccount();
+      final user = await authRepository.currentUser();
+      if (user == null) {
+        throw Exception('No active session found while saving location.');
+      }
 
       final location = LocationDraftFactory.fromSelection(
         id: 'location-${DateTime.now().millisecondsSinceEpoch}',
@@ -147,11 +149,12 @@ class _OnboardingLocationScreenState
         createdAt: DateTime.now().toUtc(),
       );
 
-      await locationRepository.saveLocation(location);
-      await locationRepository.setActiveLocation(location.id);
+      final savedLocation = await locationRepository.saveLocation(location);
+      await locationRepository.setActiveLocation(savedLocation.id);
       final invalidate = ref.invalidate;
       invalidate(locationsProvider);
       invalidate(activeLocationProvider);
+      invalidate(authRouteStateProvider);
 
       if (mounted) {
         context.go(AppRoutes.crops);

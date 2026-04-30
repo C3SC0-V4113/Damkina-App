@@ -33,11 +33,6 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
     return currentUserAsync.when(
       data: (user) {
         if (user == null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.go(AppRoutes.login);
-            }
-          });
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -130,7 +125,9 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
       await ref
           .read(authRepositoryProvider)
           .saveDisplayName(_nameController.text.trim());
-      ref.invalidate(currentUserProvider);
+      ref
+        ..invalidate(currentUserProvider)
+        ..invalidate(authRouteStateProvider);
 
       if (mounted) {
         context.go(AppRoutes.onboardingLocation);

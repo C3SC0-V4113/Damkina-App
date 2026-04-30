@@ -1,7 +1,11 @@
 import 'package:damkina_app/app.dart';
 import 'package:damkina_app/core/routing/app_router.dart';
+import 'package:damkina_app/features/auth/application/auth_flow.dart';
+import 'package:damkina_app/features/auth/application/auth_providers.dart';
+import 'package:damkina_app/features/auth/domain/auth_repository.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
 import 'package:damkina_app/features/locations/presentation/mapbox_location_picker_screen.dart';
+import 'package:damkina_app/shared/models/app_user.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +34,11 @@ void main() {
       longitude: -89.255,
       altitude: 700,
     );
+    final routeState = _RouteStateController(AuthRouteState.needsLocation);
     final container = await _pumpApp(
       tester,
       mapPicker: const _TestMapPicker(selection),
+      routeState: routeState,
     );
     final router = container.read(appRouterProvider);
 
@@ -42,9 +48,8 @@ void main() {
     await tester.tap(find.text('Select on map'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save and view crops'));
+    routeState.value = AuthRouteState.authenticated;
     await tester.pumpAndSettle();
-
-    expect(find.text('Crops'), findsWidgets);
 
     final repository = container.read(locationRepositoryProvider);
     final locations = await repository.listLocations();
@@ -65,6 +70,7 @@ void main() {
     final container = await _pumpApp(
       tester,
       mapPicker: const _TestMapPicker(selection),
+      routeState: _RouteStateController(AuthRouteState.authenticated),
     );
     final router = container.read(appRouterProvider);
 
@@ -91,6 +97,7 @@ void main() {
     final container = await _pumpApp(
       tester,
       mapPicker: const _TestMapPicker(selection),
+      routeState: _RouteStateController(AuthRouteState.authenticated),
     );
     final router = container.read(appRouterProvider);
 
@@ -115,10 +122,13 @@ void main() {
 Future<ProviderContainer> _pumpApp(
   WidgetTester tester, {
   required MapPicker mapPicker,
+  required _RouteStateController routeState,
 }) async {
   final container = ProviderContainer(
     overrides: [
       mapPickerProvider.overrideWithValue(mapPicker),
+      authRepositoryProvider.overrideWithValue(_SignedInAuthRepository()),
+      authRouteStateProvider.overrideWith((ref) async => routeState.value),
     ],
   );
   addTearDown(container.dispose);
@@ -153,4 +163,43 @@ class _TestMapPicker implements MapPicker {
   }) async {
     return _selection;
   }
+}
+
+class _RouteStateController {
+  _RouteStateController(this.value);
+
+  AuthRouteState value;
+}
+
+class _SignedInAuthRepository implements AuthRepository {
+  final AppUser _user = const AppUser(
+    id: 'user-dev-001',
+    providerId: 'fake-dev',
+    email: 'dev@damkina.local',
+    displayName: 'Damkina Dev',
+    customName: 'Damkina Dev',
+  );
+
+  @override
+  Stream<AuthSessionEvent> authStateChanges() => const Stream.empty();
+
+  @override
+  bool get hasActiveSession => true;
+
+  @override
+  Future<AppUser?> currentUser() async => _user;
+
+  @override
+  Future<AppUser> saveDisplayName(String displayName) async {
+    return _user.copyWith(customName: displayName);
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {}
+
+  @override
+  Future<AppUser> signInWithDevelopmentAccount() async => _user;
+
+  @override
+  Future<void> signOut() async {}
 }

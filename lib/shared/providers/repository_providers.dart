@@ -10,6 +10,7 @@ import 'package:damkina_app/features/crops/domain/recommendation_repository.dart
 import 'package:damkina_app/features/locations/data/fake_location_repository.dart';
 import 'package:damkina_app/features/locations/data/mapbox_location_selection_metadata_resolver.dart';
 import 'package:damkina_app/features/locations/data/mapbox_map_picker.dart';
+import 'package:damkina_app/features/locations/data/supabase_location_repository.dart';
 import 'package:damkina_app/features/locations/domain/location_repository.dart';
 import 'package:damkina_app/features/locations/domain/location_selection_metadata_resolver.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
@@ -29,6 +30,11 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final locationRepositoryProvider = Provider<LocationRepository>((ref) {
+  final appConfig = ref.watch(appConfigProvider);
+  if (appConfig.hasSupabaseConfig) {
+    return SupabaseLocationRepository(client: Supabase.instance.client);
+  }
+
   return FakeLocationRepository();
 });
 

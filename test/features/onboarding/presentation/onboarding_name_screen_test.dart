@@ -96,13 +96,16 @@ class _TestRouterApp extends StatelessWidget {
 class _TestAuthRepository implements AuthRepository {
   _TestAuthRepository({required this.user});
 
-  final StreamController<Object?> _controller =
-      StreamController<Object?>.broadcast();
+  final StreamController<AuthSessionEvent> _controller =
+      StreamController<AuthSessionEvent>.broadcast();
   AppUser? user;
   String? lastSavedDisplayName;
 
   @override
-  Stream<Object?> authStateChanges() => _controller.stream;
+  Stream<AuthSessionEvent> authStateChanges() => _controller.stream;
+
+  @override
+  bool get hasActiveSession => user != null;
 
   @override
   Future<AppUser?> currentUser() async => user;
@@ -113,7 +116,7 @@ class _TestAuthRepository implements AuthRepository {
     final current = user!;
     final updated = current.copyWith(customName: displayName);
     user = updated;
-    _controller.add(null);
+    _controller.add(AuthSessionEvent.changed);
     return updated;
   }
 
@@ -128,6 +131,6 @@ class _TestAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     user = null;
-    _controller.add(null);
+    _controller.add(AuthSessionEvent.changed);
   }
 }

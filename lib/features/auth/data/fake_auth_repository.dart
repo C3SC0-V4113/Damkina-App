@@ -4,12 +4,15 @@ import 'package:damkina_app/features/auth/domain/auth_repository.dart';
 import 'package:damkina_app/shared/models/app_user.dart';
 
 class FakeAuthRepository implements AuthRepository {
-  final StreamController<Object?> _authStateController =
-      StreamController<Object?>.broadcast();
+  final StreamController<AuthSessionEvent> _authStateController =
+      StreamController<AuthSessionEvent>.broadcast();
   AppUser? _user;
 
   @override
-  Stream<Object?> authStateChanges() => _authStateController.stream;
+  Stream<AuthSessionEvent> authStateChanges() => _authStateController.stream;
+
+  @override
+  bool get hasActiveSession => _user != null;
 
   @override
   Future<AppUser?> currentUser() async => _user;
@@ -18,7 +21,7 @@ class FakeAuthRepository implements AuthRepository {
   Future<AppUser> saveDisplayName(String displayName) async {
     final current = _user ?? await signInWithDevelopmentAccount();
     _user = current.copyWith(customName: displayName.trim());
-    _authStateController.add(null);
+    _authStateController.add(AuthSessionEvent.changed);
     return _user!;
   }
 
@@ -36,7 +39,7 @@ class FakeAuthRepository implements AuthRepository {
       displayName: 'Damkina Dev',
       customName: 'Damkina Dev',
     );
-    _authStateController.add(null);
+    _authStateController.add(AuthSessionEvent.changed);
 
     return _user!;
   }
@@ -44,6 +47,6 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     _user = null;
-    _authStateController.add(null);
+    _authStateController.add(AuthSessionEvent.changed);
   }
 }

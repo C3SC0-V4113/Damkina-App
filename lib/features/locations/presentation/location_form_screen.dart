@@ -194,9 +194,10 @@ class _LocationFormViewState extends ConsumerState<_LocationFormView> {
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final locationRepository = ref.read(locationRepositoryProvider);
-      final user =
-          await authRepository.currentUser() ??
-          await authRepository.signInWithDevelopmentAccount();
+      final user = await authRepository.currentUser();
+      if (user == null) {
+        throw Exception('No active session found while saving location.');
+      }
       final existing = widget.initialLocation;
 
       final location = LocationDraftFactory.fromSelection(

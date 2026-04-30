@@ -34,6 +34,11 @@ class FakeLocationRepository implements LocationRepository {
   String _activeLocationId = 'location-juayua';
 
   @override
+  Future<bool> hasAnyLocationForUser(String userId) async {
+    return _locations.any((location) => location.userId == userId);
+  }
+
+  @override
   Future<void> deleteLocation(String id) async {
     _locations.removeWhere((location) => location.id == id);
     if (_activeLocationId == id && _locations.isNotEmpty) {

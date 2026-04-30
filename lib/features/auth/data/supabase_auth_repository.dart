@@ -14,13 +14,16 @@ class SupabaseAuthRepository implements AuthRepository {
   final AppConfig _appConfig;
 
   @override
-  Stream<Object?> authStateChanges() {
-    return _client.auth.onAuthStateChange;
-  }
+  Stream<AuthSessionEvent> authStateChanges() =>
+      _client.auth.onAuthStateChange.map((_) => AuthSessionEvent.changed);
+
+  @override
+  bool get hasActiveSession => _client.auth.currentSession != null;
 
   @override
   Future<AppUser?> currentUser() async {
-    final authUser = _client.auth.currentUser;
+    final authUser =
+        _client.auth.currentUser ?? _client.auth.currentSession?.user;
     if (authUser == null) {
       return null;
     }

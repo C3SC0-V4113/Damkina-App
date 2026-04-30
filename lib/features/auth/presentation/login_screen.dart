@@ -1,11 +1,9 @@
 import 'package:damkina_app/core/theme/app_tokens.dart';
-import 'package:damkina_app/features/auth/application/auth_flow.dart';
 import 'package:damkina_app/features/auth/application/auth_providers.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -16,19 +14,21 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isSubmitting = false;
-  String? _lastRoutedPath;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(_lifecycleObserver);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(_lifecycleObserver);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(currentUserProvider, (_, next) {
-      next.whenData((user) {
-        if (user == null) {
-          return;
-        }
-        _routeTo(resolvePostAuthRoute(user));
-      });
-    });
-
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -137,17 +137,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _routeTo(String route) {
-    if (!mounted || _lastRoutedPath == route) {
-      return;
-    }
+  late final WidgetsBindingObserver _lifecycleObserver =
+      _LoginLifecycleObserver(
+        onResumed: () {
+          if (!mounted) {
+            return;
+          }
+          ref
+            ..invalidate(currentUserProvider)
+            ..invalidate(authRouteStateProvider);
+        },
+      );
+}
 
-    _lastRoutedPath = route;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      context.go(route);
-    });
+class _LoginLifecycleObserver extends WidgetsBindingObserver {
+  _LoginLifecycleObserver({required this.onResumed});
+
+  final VoidCallback onResumed;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      onResumed();
+    }
   }
 }

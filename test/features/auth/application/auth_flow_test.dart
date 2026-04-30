@@ -31,4 +31,11 @@ void main() {
 
     expect(resolvePostAuthRoute(user), AppRoutes.crops);
   });
+
+  test('routeForAuthState returns onboarding location for needsLocation', () {
+    expect(
+      routeForAuthState(AuthRouteState.needsLocation),
+      AppRoutes.onboardingLocation,
+    );
+  });
 }
