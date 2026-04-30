@@ -62,11 +62,42 @@ class LocationsScreen extends ConsumerWidget {
                                 .read(locationRepositoryProvider)
                                 .setActiveLocation(location.id);
                             ref.invalidate(activeLocationProvider);
+                            return;
                           case _LocationAction.edit:
                             if (!context.mounted) {
                               return;
                             }
                             context.go('/locations/${location.id}/edit');
+                            return;
+                          case _LocationAction.delete:
+                            final confirmed = await _showDeleteLocationSheet(
+                              context,
+                            );
+                            if (!confirmed || !context.mounted) {
+                              return;
+                            }
+
+                            try {
+                              await ref
+                                  .read(locationRepositoryProvider)
+                                  .deleteLocation(location.id);
+                              ref
+                                ..invalidate(locationsProvider)
+                                ..invalidate(activeLocationProvider)
+                                ..invalidate(locationByIdProvider(location.id));
+                            } on Exception {
+                              if (!context.mounted) {
+                                return;
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'No se pudo eliminar la ubicacion.',
+                                  ),
+                                ),
+                              );
+                            }
+                            return;
                         }
                       },
                       itemBuilder: (context) => [
@@ -78,6 +109,10 @@ class LocationsScreen extends ConsumerWidget {
                         const PopupMenuItem(
                           value: _LocationAction.edit,
                           child: Text('Editar'),
+                        ),
+                        const PopupMenuItem(
+                          value: _LocationAction.delete,
+                          child: Text('Eliminar'),
                         ),
                       ],
                     ),
@@ -106,7 +141,127 @@ String _addressLabelFromAsync(AsyncValue<String?> asyncValue) {
   };
 }
 
+Future<bool> _showDeleteLocationSheet(BuildContext context) async {
+  final result = await showModalBottomSheet<bool>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => const _DeleteLocationSheet(),
+  );
+
+  return result ?? false;
+}
+
+class _DeleteLocationSheet extends StatelessWidget {
+  const _DeleteLocationSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          0,
+          AppSpacing.md,
+          AppSpacing.md,
+        ),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: AppColors.cream,
+            borderRadius: BorderRadius.all(Radius.circular(AppRadii.lg)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.line,
+                    borderRadius: BorderRadius.circular(AppRadii.sm),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.danger.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.warning_rounded,
+                    color: AppColors.danger,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  '¿Eliminar ubicación?',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: AppColors.ink,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Esta acción no se puede deshacer. Perderás las '
+                  'recomendaciones personalizadas para este terreno.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.mutedInk,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.danger,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.md,
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('Eliminar'),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.line,
+                      foregroundColor: AppColors.ink,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.md,
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('Cancelar'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 enum _LocationAction {
   setActive,
   edit,
+  delete,
 }
