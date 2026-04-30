@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:damkina_app/features/auth/application/auth_flow.dart';
-import 'package:damkina_app/features/auth/domain/auth_repository.dart';
 import 'package:damkina_app/shared/models/app_user.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final authStateChangesProvider = StreamProvider<AuthSessionEvent>((ref) {
-  return ref.watch(authRepositoryProvider).authStateChanges();
+final authStateChangesProvider = StreamProvider<int>((ref) {
+  var revision = 0;
+  return ref
+      .watch(authRepositoryProvider)
+      .authStateChanges()
+      .map((_) => ++revision);
 });
 
 final currentUserProvider = FutureProvider<AppUser?>((ref) {

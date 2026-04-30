@@ -14,6 +14,7 @@ import 'package:damkina_app/features/locations/data/supabase_location_repository
 import 'package:damkina_app/features/locations/domain/location_repository.dart';
 import 'package:damkina_app/features/locations/domain/location_selection_metadata_resolver.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
+import 'package:damkina_app/shared/providers/session_revision_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,6 +31,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final locationRepositoryProvider = Provider<LocationRepository>((ref) {
+  ref.watch(userSessionRevisionProvider);
   final appConfig = ref.watch(appConfigProvider);
   if (appConfig.hasSupabaseConfig) {
     return SupabaseLocationRepository(client: Supabase.instance.client);
