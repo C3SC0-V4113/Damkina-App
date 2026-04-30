@@ -11,6 +11,7 @@ class CropsScreen extends StatelessWidget {
       title: 'Crops',
       description: 'Recommendations will read AsyncValue from Riverpod.',
       actionLabel: 'Open sample crop',
+      useDesignTitleAppBar: true,
       onActionPressed: () => context.go('/crops/crop-tomato'),
     );
   }

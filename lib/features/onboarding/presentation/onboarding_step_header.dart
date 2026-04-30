@@ -7,13 +7,14 @@ class OnboardingProgressAppBar extends StatelessWidget
     required this.title,
     required this.subtitle,
     required this.progress,
+    this.automaticallyImplyLeading = false,
     super.key,
   });
 
   final String title;
   final String subtitle;
   final double progress;
-
+  final bool automaticallyImplyLeading;
   static const _appBarHeight = 118.0;
 
   @override
@@ -22,7 +23,7 @@ class OnboardingProgressAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: automaticallyImplyLeading,
       toolbarHeight: _appBarHeight,
       titleSpacing: 0,
       title: Padding(

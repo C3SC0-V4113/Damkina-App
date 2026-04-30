@@ -78,12 +78,13 @@ void main() {
     await _goAndPump(router, tester, '/locations/new');
 
     await tester.enterText(find.byType(TextFormField), 'Finca Test');
-    await tester.tap(find.text('Select on map'));
+    await tester.tap(find.text('Seleccionar en mapa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Create location'));
+    await tester.ensureVisible(find.text('Crear ubicacion'));
+    await tester.tap(find.text('Crear ubicacion'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Locations'), findsWidgets);
+    expect(find.text('Ubicaciones'), findsWidgets);
     expect(find.text('Finca Test'), findsOneWidget);
   });
 
@@ -105,9 +106,10 @@ void main() {
     await _goAndPump(router, tester, '/locations/location-juayua/edit');
 
     await tester.enterText(find.byType(TextFormField), 'Terreno Central');
-    await tester.tap(find.text('Update map selection'));
+    await tester.tap(find.text('Actualizar seleccion en mapa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Save changes'));
+    await tester.ensureVisible(find.text('Guardar cambios'));
+    await tester.tap(find.text('Guardar cambios'));
     await tester.pumpAndSettle();
 
     final repository = container.read(locationRepositoryProvider);

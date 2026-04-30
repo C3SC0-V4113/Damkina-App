@@ -33,9 +33,18 @@ class _OnboardingLocationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final selectionSummary = _selection == null
-        ? 'Aun no has seleccionado una ubicacion.'
-        : _selectionCoordinatesLabel(_selection!);
+    final selection = _selection;
+    final selectionAddressAsync = selection == null
+        ? null
+        : ref.watch(
+            locationAddressProvider((selection.latitude, selection.longitude)),
+          );
+    final selectionSummary = switch (selectionAddressAsync) {
+      null => 'Aun no has seleccionado una ubicacion.',
+      AsyncData(:final value) => value ?? 'Direccion no disponible por ahora.',
+      AsyncError() => 'Direccion no disponible por ahora.',
+      _ => 'Resolviendo direccion...',
+    };
 
     return Scaffold(
       appBar: const OnboardingProgressAppBar(
@@ -144,12 +153,6 @@ class _OnboardingLocationScreenState
     setState(() {
       _selection = selection;
     });
-  }
-
-  String _selectionCoordinatesLabel(MapSelection selection) {
-    final latitude = selection.latitude.toStringAsFixed(5);
-    final longitude = selection.longitude.toStringAsFixed(5);
-    return 'Lat $latitude - Lng $longitude';
   }
 
   Future<void> _saveAndContinue() async {

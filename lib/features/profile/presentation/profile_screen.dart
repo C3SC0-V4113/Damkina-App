@@ -9,6 +9,7 @@ class ProfileScreen extends StatelessWidget {
     return const DamkinaPlaceholderScreen(
       title: 'Profile',
       description: 'Profile data will come from AuthRepository.',
+      useDesignTitleAppBar: true,
     );
   }
 }

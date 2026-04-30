@@ -2,6 +2,7 @@ import 'package:damkina_app/core/routing/app_routes.dart';
 import 'package:damkina_app/core/theme/app_tokens.dart';
 import 'package:damkina_app/features/locations/application/location_providers.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
+import 'package:damkina_app/shared/widgets/design_title_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,17 +16,22 @@ class LocationsScreen extends ConsumerWidget {
     final activeLocationAsync = ref.watch(activeLocationProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Locations')),
+      appBar: const DesignTitleAppBar(
+        title: 'Ubicaciones',
+        automaticallyImplyLeading: false,
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go(AppRoutes.locationNew),
         icon: const Icon(Icons.add),
-        label: const Text('Add location'),
+        label: const Text('Agregar ubicacion'),
       ),
       body: SafeArea(
         child: locationsAsync.when(
           data: (locations) {
             if (locations.isEmpty) {
-              return const Center(child: Text('No saved locations yet.'));
+              return const Center(
+                child: Text('Aun no hay ubicaciones guardadas.'),
+              );
             }
 
             final activeId = activeLocationAsync.asData?.value?.id;
@@ -34,13 +40,16 @@ class LocationsScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final location = locations[index];
                 final isActive = location.id == activeId;
+                final addressAsync = ref.watch(
+                  locationAddressProvider((
+                    location.latitude,
+                    location.longitude,
+                  )),
+                );
                 return Card(
                   child: ListTile(
                     title: Text(location.name),
-                    subtitle: Text(
-                      'Lat ${location.latitude.toStringAsFixed(5)} - '
-                      'Lng ${location.longitude.toStringAsFixed(5)}',
-                    ),
+                    subtitle: Text(_addressLabelFromAsync(addressAsync)),
                     leading: Icon(
                       isActive ? Icons.check_circle : Icons.place_outlined,
                       color: isActive ? AppColors.forest : null,
@@ -64,11 +73,11 @@ class LocationsScreen extends ConsumerWidget {
                         if (!isActive)
                           const PopupMenuItem(
                             value: _LocationAction.setActive,
-                            child: Text('Set active'),
+                            child: Text('Definir activa'),
                           ),
                         const PopupMenuItem(
                           value: _LocationAction.edit,
-                          child: Text('Edit'),
+                          child: Text('Editar'),
                         ),
                       ],
                     ),
@@ -81,12 +90,20 @@ class LocationsScreen extends ConsumerWidget {
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, _) => const Center(
-            child: Text('Could not load locations.'),
+            child: Text('No se pudieron cargar las ubicaciones.'),
           ),
         ),
       ),
     );
   }
+}
+
+String _addressLabelFromAsync(AsyncValue<String?> asyncValue) {
+  return switch (asyncValue) {
+    AsyncData(:final value) => value ?? 'Direccion no disponible por ahora.',
+    AsyncError() => 'Direccion no disponible por ahora.',
+    _ => 'Resolviendo direccion...',
+  };
 }
 
 enum _LocationAction {

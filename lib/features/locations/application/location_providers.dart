@@ -16,3 +16,19 @@ final locationByIdProvider = FutureProvider.family<Location?, String>((
 ) {
   return ref.watch(locationRepositoryProvider).getLocationById(id);
 });
+
+final locationAddressProvider =
+    FutureProvider.family<String?, (double latitude, double longitude)>((
+      ref,
+      coordinates,
+    ) async {
+      final resolver = ref.watch(locationSelectionMetadataResolverProvider);
+      if (resolver == null) {
+        return null;
+      }
+
+      return resolver.resolveAddress(
+        latitude: coordinates.$1,
+        longitude: coordinates.$2,
+      );
+    });
