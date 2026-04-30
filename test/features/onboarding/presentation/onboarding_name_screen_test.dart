@@ -32,7 +32,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Onboarding name'), findsOneWidget);
+    expect(find.text('Configuracion inicial'), findsOneWidget);
     expect(find.text('Google Name'), findsOneWidget);
   });
 
@@ -58,7 +58,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextFormField), 'Nuevo Nombre');
-    await tester.tap(find.text('Continuar'));
+    await tester.ensureVisible(find.text('Siguiente paso'));
+    await tester.tap(find.text('Siguiente paso'));
     await tester.pumpAndSettle();
 
     expect(repository.lastSavedDisplayName, 'Nuevo Nombre');

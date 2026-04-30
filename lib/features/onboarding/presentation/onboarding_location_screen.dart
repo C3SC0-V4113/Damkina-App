@@ -4,6 +4,7 @@ import 'package:damkina_app/features/auth/application/auth_providers.dart';
 import 'package:damkina_app/features/locations/application/location_draft_factory.dart';
 import 'package:damkina_app/features/locations/application/location_providers.dart';
 import 'package:damkina_app/features/locations/domain/map_picker.dart';
+import 'package:damkina_app/features/onboarding/presentation/onboarding_step_header.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,7 @@ class OnboardingLocationScreen extends ConsumerStatefulWidget {
 
 class _OnboardingLocationScreenState
     extends ConsumerState<OnboardingLocationScreen> {
-  final _nameController = TextEditingController(text: 'My first location');
+  final _nameController = TextEditingController(text: 'Mi primer huerto');
   final _formKey = GlobalKey<FormState>();
   MapSelection? _selection;
   bool _saving = false;
@@ -32,68 +33,96 @@ class _OnboardingLocationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final selectionSummary = _selection == null
+        ? 'Aun no has seleccionado una ubicacion.'
+        : _selectionCoordinatesLabel(_selection!);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Onboarding location')),
+      appBar: const OnboardingProgressAppBar(
+        title: 'Establecer ubicacion',
+        subtitle: 'Paso 2 de 2: Tu primer huerto',
+        progress: 1,
+      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Select your first location',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 380),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadii.lg),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                const Text(
-                  'Pick a point on the map and save it as your active '
-                  'location.',
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                TextFormField(
-                  controller: _nameController,
-                  textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    labelText: 'Location name',
-                    hintText: 'Casa, Parcela Norte, Terreno de Juayua...',
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.lg,
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Location name is required.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                OutlinedButton.icon(
-                  onPressed: _saving ? null : _pickFromMap,
-                  icon: const Icon(Icons.map_outlined),
-                  label: Text(
-                    _selection == null
-                        ? 'Select on map'
-                        : 'Update map selection',
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Elige la ubicacion de tu primer huerto.',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Selecciona un punto en el mapa y guardalo '
+                          'como tu ubicacion activa.',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: AppColors.mutedInk,
+                              ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.done,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre de ubicacion',
+                            hintText:
+                                'Casa, Parcela Norte, Terreno de Juayua...',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'El nombre de la ubicacion '
+                                  'es obligatorio.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        OutlinedButton.icon(
+                          onPressed: _saving ? null : _pickFromMap,
+                          icon: const Icon(Icons.map_outlined),
+                          label: Text(
+                            _selection == null
+                                ? 'Seleccionar en mapa'
+                                : 'Actualizar seleccion en mapa',
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(selectionSummary),
+                        const SizedBox(height: AppSpacing.xl),
+                        FilledButton(
+                          onPressed: _saving ? null : _saveAndContinue,
+                          child: _saving
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Guardar y ver cultivos'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  _selection == null
-                      ? 'No location selected yet.'
-                      : 'Lat ${_selection!.latitude.toStringAsFixed(5)} - '
-                            'Lng ${_selection!.longitude.toStringAsFixed(5)}',
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                FilledButton(
-                  onPressed: _saving ? null : _saveAndContinue,
-                  child: _saving
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Save and view crops'),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -117,6 +146,12 @@ class _OnboardingLocationScreenState
     });
   }
 
+  String _selectionCoordinatesLabel(MapSelection selection) {
+    final latitude = selection.latitude.toStringAsFixed(5);
+    final longitude = selection.longitude.toStringAsFixed(5);
+    return 'Lat $latitude - Lng $longitude';
+  }
+
   Future<void> _saveAndContinue() async {
     final formIsValid = _formKey.currentState?.validate() ?? false;
     if (!formIsValid) {
@@ -124,7 +159,9 @@ class _OnboardingLocationScreenState
     }
     if (_selection == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please choose a location on the map.')),
+        const SnackBar(
+          content: Text('Elige una ubicacion en el mapa para continuar.'),
+        ),
       );
       return;
     }
@@ -165,7 +202,9 @@ class _OnboardingLocationScreenState
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Could not save location. Please try again.'),
+          content: Text(
+            'No se pudo guardar la ubicacion. Intenta nuevamente.',
+          ),
         ),
       );
     } finally {

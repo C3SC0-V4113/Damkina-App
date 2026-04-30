@@ -45,9 +45,10 @@ void main() {
     await _goAndPump(router, tester, '/onboarding/location');
 
     await tester.enterText(find.byType(TextFormField), 'Parcela Uno');
-    await tester.tap(find.text('Select on map'));
+    await tester.tap(find.text('Seleccionar en mapa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Save and view crops'));
+    await tester.ensureVisible(find.text('Guardar y ver cultivos'));
+    await tester.tap(find.text('Guardar y ver cultivos'));
     routeState.value = AuthRouteState.authenticated;
     await tester.pumpAndSettle();
 

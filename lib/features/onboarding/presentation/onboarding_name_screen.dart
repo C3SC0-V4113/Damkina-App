@@ -1,6 +1,7 @@
 import 'package:damkina_app/core/routing/app_routes.dart';
 import 'package:damkina_app/core/theme/app_tokens.dart';
 import 'package:damkina_app/features/auth/application/auth_providers.dart';
+import 'package:damkina_app/features/onboarding/presentation/onboarding_step_header.dart';
 import 'package:damkina_app/shared/providers/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,55 +47,97 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Onboarding name')),
+          appBar: const OnboardingProgressAppBar(
+            title: 'Configuracion inicial',
+            subtitle: 'Paso 1 de 2: Tu perfil de cultivador',
+            progress: 0.5,
+          ),
           body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Como quieres que te llamemos?',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 380),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadii.lg),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.lg,
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Center(
+                              child: Container(
+                                width: 84,
+                                height: 84,
+                                decoration: BoxDecoration(
+                                  color: AppColors.forest,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.lg,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.person_outline_rounded,
+                                  size: 42,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            Text(
+                              'Bienvenido a Damkina.',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'Comencemos con tu nombre. '
+                              'Como quieres que te llamemos?',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.mutedInk,
+                                  ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            TextFormField(
+                              controller: _nameController,
+                              textInputAction: TextInputAction.done,
+                              decoration: const InputDecoration(
+                                labelText: 'Nombre o apodo',
+                                hintText: 'p. ej. River',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Ingresa un nombre para continuar.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            FilledButton(
+                              onPressed: _saving ? null : _saveAndContinue,
+                              child: _saving
+                                  ? const SizedBox.square(
+                                      dimension: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text('Siguiente paso'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Este nombre se guardara como tu nombre visible '
-                      'en la app.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.mutedInk,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    TextFormField(
-                      controller: _nameController,
-                      textInputAction: TextInputAction.done,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre de usuario',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Ingresa un nombre para continuar.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    FilledButton(
-                      onPressed: _saving ? null : _saveAndContinue,
-                      child: _saving
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Continuar'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
