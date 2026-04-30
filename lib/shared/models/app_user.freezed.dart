@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppUser {
 
- String get id; String get providerId; String get email; String get displayName; String? get customName; String? get avatarUrl;
+ String get id; String get providerId; String get email; String get displayName; String? get customName; String? get avatarUrl; DateTime? get createdAt;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AppUserCopyWith<AppUser> get copyWith => _$AppUserCopyWithImpl<AppUser>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.customName, customName) || other.customName == customName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.customName, customName) || other.customName == customName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,providerId,email,displayName,customName,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,providerId,email,displayName,customName,avatarUrl,createdAt);
 
 @override
 String toString() {
-  return 'AppUser(id: $id, providerId: $providerId, email: $email, displayName: $displayName, customName: $customName, avatarUrl: $avatarUrl)';
+  return 'AppUser(id: $id, providerId: $providerId, email: $email, displayName: $displayName, customName: $customName, avatarUrl: $avatarUrl, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AppUserCopyWith<$Res>  {
   factory $AppUserCopyWith(AppUser value, $Res Function(AppUser) _then) = _$AppUserCopyWithImpl;
 @useResult
 $Res call({
- String id, String providerId, String email, String displayName, String? customName, String? avatarUrl
+ String id, String providerId, String email, String displayName, String? customName, String? avatarUrl, DateTime? createdAt
 });
 
 
@@ -65,7 +65,7 @@ class _$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? providerId = null,Object? email = null,Object? displayName = null,Object? customName = freezed,Object? avatarUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? providerId = null,Object? email = null,Object? displayName = null,Object? customName = freezed,Object? avatarUrl = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,providerId: null == providerId ? _self.providerId : providerId // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as String,email: null == email ? _self.email : email // ignore: cast_nullable_to
 as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String,customName: freezed == customName ? _self.customName : customName // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl);case _:
+return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl,_that.createdAt);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _AppUser():
-return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl);case _:
+return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String providerId,  String email,  String displayName,  String? customName,  String? avatarUrl,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl);case _:
+return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.customName,_that.avatarUrl,_that.createdAt);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.id,_that.providerId,_that.email,_that.displayName,_that.cu
 @JsonSerializable()
 
 class _AppUser implements AppUser {
-  const _AppUser({required this.id, required this.providerId, required this.email, required this.displayName, this.customName, this.avatarUrl});
+  const _AppUser({required this.id, required this.providerId, required this.email, required this.displayName, this.customName, this.avatarUrl, this.createdAt});
   factory _AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
 
 @override final  String id;
@@ -223,6 +224,7 @@ class _AppUser implements AppUser {
 @override final  String displayName;
 @override final  String? customName;
 @override final  String? avatarUrl;
+@override final  DateTime? createdAt;
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.customName, customName) || other.customName == customName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.id, id) || other.id == id)&&(identical(other.providerId, providerId) || other.providerId == providerId)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.customName, customName) || other.customName == customName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,providerId,email,displayName,customName,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,providerId,email,displayName,customName,avatarUrl,createdAt);
 
 @override
 String toString() {
-  return 'AppUser(id: $id, providerId: $providerId, email: $email, displayName: $displayName, customName: $customName, avatarUrl: $avatarUrl)';
+  return 'AppUser(id: $id, providerId: $providerId, email: $email, displayName: $displayName, customName: $customName, avatarUrl: $avatarUrl, createdAt: $createdAt)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   factory _$AppUserCopyWith(_AppUser value, $Res Function(_AppUser) _then) = __$AppUserCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String providerId, String email, String displayName, String? customName, String? avatarUrl
+ String id, String providerId, String email, String displayName, String? customName, String? avatarUrl, DateTime? createdAt
 });
 
 
@@ -274,7 +276,7 @@ class __$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? providerId = null,Object? email = null,Object? displayName = null,Object? customName = freezed,Object? avatarUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? providerId = null,Object? email = null,Object? displayName = null,Object? customName = freezed,Object? avatarUrl = freezed,Object? createdAt = freezed,}) {
   return _then(_AppUser(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,providerId: null == providerId ? _self.providerId : providerId // ignore: cast_nullable_to_non_nullable
@@ -282,7 +284,8 @@ as String,email: null == email ? _self.email : email // ignore: cast_nullable_to
 as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String,customName: freezed == customName ? _self.customName : customName // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

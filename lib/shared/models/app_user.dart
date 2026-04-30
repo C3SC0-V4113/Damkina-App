@@ -12,6 +12,7 @@ abstract class AppUser with _$AppUser {
     required String displayName,
     String? customName,
     String? avatarUrl,
+    DateTime? createdAt,
   }) = _AppUser;
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

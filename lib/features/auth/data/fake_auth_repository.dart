@@ -32,12 +32,13 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<AppUser> signInWithDevelopmentAccount() async {
-    _user ??= const AppUser(
+    _user ??= AppUser(
       id: 'user-dev-001',
       providerId: 'fake-dev',
       email: 'dev@damkina.local',
       displayName: 'Damkina Dev',
       customName: 'Damkina Dev',
+      createdAt: DateTime.utc(2026, 4, 21),
     );
     _authStateController.add(AuthSessionEvent.changed);
 

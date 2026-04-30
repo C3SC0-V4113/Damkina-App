@@ -41,6 +41,7 @@ class SupabaseAuthRepository implements AuthRepository {
       email: authUser.email ?? '',
       displayName: displayName,
       customName: _nonEmpty(profile?.customName),
+      createdAt: profile?.createdAt,
       avatarUrl:
           _nonEmpty(profile?.avatarUrl) ??
           _nonEmpty(authUser.userMetadata?['avatar_url'] as String?),
@@ -100,7 +101,7 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<_ProfileRow?> _getProfile(String userId) async {
     final data = await _client
         .from('profiles')
-        .select('display_name, custom_name, avatar_url')
+        .select('display_name, custom_name, avatar_url, created_at')
         .eq('id', userId)
         .maybeSingle();
 
@@ -112,6 +113,9 @@ class SupabaseAuthRepository implements AuthRepository {
       displayName: data['display_name'] as String?,
       customName: data['custom_name'] as String?,
       avatarUrl: data['avatar_url'] as String?,
+      createdAt: DateTime.tryParse(
+        data['created_at'] as String? ?? '',
+      )?.toUtc(),
     );
   }
 
@@ -133,9 +137,11 @@ class _ProfileRow {
     required this.displayName,
     required this.customName,
     required this.avatarUrl,
+    required this.createdAt,
   });
 
   final String? displayName;
   final String? customName;
   final String? avatarUrl;
+  final DateTime? createdAt;
 }
